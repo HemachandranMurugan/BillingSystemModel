@@ -15,14 +15,54 @@ This system integrates sales tracking, invoice generation, payment monitoring an
   - Fetch all invoices
   - Check customer balance
   - Check paid and unpaid invoices
+
+
+## Installation
+
+1. Clone the repository:
+
+2. Set up your MySQL database and configure JDBC connection details in the project.
+
+3. Compile and run the application.
+
+## Database Schema
+The system uses three main tables: Customer, Product, and Bill.
+
+**Customer Table**
+Column Name	Data Type
+customer_phoneNo	VARCHAR
+customer_name	VARCHAR
+membership_points	DOUBLE
+customer_balance	DOUBLE
+
+**Product Table**
+Column Name	Data Type
+product_id	VARCHAR
+product_name	VARCHAR
+price	DOUBLE
+quantity	INT
+
+**Bill Table**
+Column Name	Data Type
+bill_no	VARCHAR
+bill_date	DATE
+bill_amt	DOUBLE
+bill_discount	DOUBLE
+customer_id	VARCHAR
+
+
+**ItemSales Table**
+Column Name	Data Type
+product_id	VARCHAR
+bill_no	VARCHAR
+bill_quantity	INT
   
-## Screenshots
 
-![Screenshot 2024-07-18 194915](https://github.com/user-attachments/assets/de93ed7f-8445-49d5-89db-1c8ee0bc9ca7)
 
-![Screenshot 2024-07-18 194931](https://github.com/user-attachments/assets/b83a8d68-bfac-4858-8cab-046341f0afc2)
 
-![Screenshot 2024-07-18 194945](https://github.com/user-attachments/assets/076ca2fe-3d67-441f-993c-22d63ef7c8fa)
+
+
+
 
 
 
