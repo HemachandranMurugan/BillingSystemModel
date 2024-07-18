@@ -11,7 +11,7 @@ import java.text.SimpleDateFormat;
 public class BillingDAO {
     private final String jdbcURL = "jdbc:mysql://localhost:3306/billingSystemModel";
     private final String jdbcUsername = "root";
-    private final String jdbcPassword = "gmhemanth2003";
+    private final String jdbcPassword = "gmhemanth2003"; //your password
 
     private Connection getConnection() throws SQLException {
         return DriverManager.getConnection(jdbcURL, jdbcUsername, jdbcPassword);
