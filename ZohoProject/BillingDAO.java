@@ -53,7 +53,7 @@ public class BillingDAO {
     }
 
     public void insertBill(Bill bill) {
-        String sql = "INSERT INTO Bill (Bill_No,Bill_Date,Customer_id,Bill_amt,Bill_discount) VALUES (?, ?, ?, ?,?)";
+        String sql = "INSERT INTO Bill (Bill_No,Bill_Date,Customer_id,Bill_amt,Bill_discount,paidInvoice) VALUES (?, ?, ?, ?,?,?)";
         try (Connection connection = getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1,bill.getBillNo());
@@ -61,6 +61,7 @@ public class BillingDAO {
             ps.setString(3, bill.getCustomerid());
             ps.setDouble(4, bill.getbillamt());
             ps.setDouble(5,bill.getDiscount());
+            ps.setBoolean(6,bill.getpaidStatus());
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -75,6 +76,18 @@ public class BillingDAO {
             ps.setString(2, BillNo);
             ps.setInt(3, BillQuantity);
             ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void updateCustomerBalance(String customerId, double newBalance) {
+        String sql="UPDATE Customer SET customer_balance = customer_balance + ? WHERE customer_phoneNo = ?";
+        try (Connection connection = getConnection();
+             PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setDouble(1, newBalance);
+            stmt.setString(2, customerId);
+            stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -424,7 +437,23 @@ public class BillingDAO {
         return products;
     }
 
+    public Map<String, Double> fetchCustomerBalance() {
+        Map<String, Double> customerBalances = new HashMap<>();
+        String sql = "SELECT Customer_phoneNo, Customer_balance as Total_Balance FROM customer";
+
+        try (Connection connection = getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                String customerphoneNo = rs.getString("Customer_phoneNo");
+                double totalBalance = rs.getDouble("Total_Balance");
+                customerBalances.put(customerphoneNo, totalBalance);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return customerBalances;
+    }
 
 }
-
-
