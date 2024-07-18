@@ -28,17 +28,45 @@ This system integrates sales tracking, invoice generation, payment monitoring an
 ## Database Schema
 The system uses three main tables: Customer, Product, and Bill.
 
-**Customer Table**
+### Tables in README
 
-|Column Name|Data Type|
-|---|---|---|
-|customer_phoneNo|VARCHAR|
+#### Table 1: Customer Table
+
+| Field Name      | Data Type | Description                   |
+|-----------------|-----------|-------------------------------|
+| customer_id     | INT       | Unique identifier for customers |
+| customer_name   | VARCHAR   | Name of the customer          |
+| customer_phone  | VARCHAR   | Phone number of the customer  |
+| membership_points | DOUBLE | Points accumulated by the customer |
+| customer_balance | DOUBLE  | Balance amount for the customer |
+
+#### Table 2: Product Table
+
+| Field Name   | Data Type | Description                       |
+|--------------|-----------|-----------------------------------|
+| product_id   | INT       | Unique identifier for products    |
+| product_name | VARCHAR   | Name of the product               |
+| unit_price   | DOUBLE    | Price per unit of the product     |
+| quantity     | INT       | Available quantity in stock       |
+
+#### Table 3: Bill Table
+
+| Field Name  | Data Type | Description                            |
+|-------------|-----------|----------------------------------------|
+| Bill_No     | VARCHAR   | Unique identifier for each bill         |
+| Bill_Date   | DATE      | Date when the bill was generated       |
+| Bill_amt    | DOUBLE    | Total amount of the bill               |
+| Customer_id | INT       | ID of the customer associated with the bill |
+
+#### Table 4: ItemSales Table
+
+| Field Name     | Data Type | Description                            |
+|----------------|-----------|----------------------------------------|
+| product_id     | INT       | ID of the product sold                 |
+| Bill_No        | VARCHAR   | Bill number associated with the sale    |
+| Bill_Quantity  | INT       | Quantity of the product sold in the bill |
 
 
-
-customer_name	**VARCHAR**,
-membership_points	**DOUBLE**,
-customer_balance	**DOUBLE**
 
 **Product Table**
 Column Name	Data Type
