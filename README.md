@@ -15,3 +15,7 @@ This system integrates sales tracking, invoice generation, payment monitoring an
   - Fetch item sales analysis
  
 ## Screenshots
+
+![Screenshot 2024-07-18 193948](https://github.com/user-attachments/assets/5db52c23-a7c3-4036-9f6a-1fde35edab4a)
+![Screenshot 2024-07-18 194652](https://github.com/user-attachments/assets/c5f22778-59ca-4b71-8ec5-9feac742416e)
+![Screenshot 2024-07-18 193937](https://github.com/user-attachments/assets/cbf0deac-49f5-405c-8f7e-1327928dc91f)
