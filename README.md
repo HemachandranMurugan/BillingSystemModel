@@ -16,6 +16,9 @@ This system integrates sales tracking, invoice generation, payment monitoring an
  
 ## Screenshots
 
-![Screenshot 2024-07-18 193948](https://github.com/user-attachments/assets/5db52c23-a7c3-4036-9f6a-1fde35edab4a)
-![Screenshot 2024-07-18 194652](https://github.com/user-attachments/assets/c5f22778-59ca-4b71-8ec5-9feac742416e)
-![Screenshot 2024-07-18 193937](https://github.com/user-attachments/assets/cbf0deac-49f5-405c-8f7e-1327928dc91f)
+
+![Screenshot 2024-07-18 194945](https://github.com/user-attachments/assets/076ca2fe-3d67-441f-993c-22d63ef7c8fa)
+
+![Screenshot 2024-07-18 194931](https://github.com/user-attachments/assets/b83a8d68-bfac-4858-8cab-046341f0afc2)
+
+![Screenshot 2024-07-18 194915](https://github.com/user-attachments/assets/de93ed7f-8445-49d5-89db-1c8ee0bc9ca7)
