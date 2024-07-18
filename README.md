@@ -32,9 +32,8 @@ The system uses three main tables: Customer, Product, and Bill.
 
 | Field Name      | Data Type | Description                   |
 |-----------------|-----------|-------------------------------|
-| customer_id     | INT       | Unique identifier for customers |
-| customer_name   | VARCHAR   | Name of the customer          |
 | customer_phone  | VARCHAR   | Phone number of the customer  |
+| customer_name   | VARCHAR   | Name of the customer          |
 | membership_points | DOUBLE | Points accumulated by the customer |
 | customer_balance | DOUBLE  | Balance amount for the customer |
 
@@ -44,6 +43,7 @@ The system uses three main tables: Customer, Product, and Bill.
 |--------------|-----------|-----------------------------------|
 | product_id   | INT       | Unique identifier for products    |
 | product_name | VARCHAR   | Name of the product               |
+| product_type | VARCHAR   | Type of the product               |
 | unit_price   | DOUBLE    | Price per unit of the product     |
 | quantity     | INT       | Available quantity in stock       |
 
@@ -51,7 +51,7 @@ The system uses three main tables: Customer, Product, and Bill.
 
 | Field Name  | Data Type | Description                            |
 |-------------|-----------|----------------------------------------|
-| Bill_No     | VARCHAR   | Unique identifier for each bill         |
+| Bill_No     | VARCHAR   | Unique identifier for each bill        |
 | Bill_Date   | DATE      | Date when the bill was generated       |
 | Bill_amt    | DOUBLE    | Total amount of the bill               |
 | Customer_id | INT       | ID of the customer associated with the bill |
