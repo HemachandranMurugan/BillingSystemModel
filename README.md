@@ -29,11 +29,11 @@ This system integrates sales tracking, invoice generation, payment monitoring an
 The system uses three main tables: Customer, Product, and Bill.
 
 **Customer Table**
-Column Name	Data Type
-customer_phoneNo	VARCHAR
-customer_name	VARCHAR
-membership_points	DOUBLE
-customer_balance	DOUBLE
+Column Name **Data Type**,
+customer_phoneNo	**VARCHAR**,
+customer_name	**VARCHAR**,
+membership_points	**DOUBLE**,
+customer_balance	**DOUBLE**
 
 **Product Table**
 Column Name	Data Type
