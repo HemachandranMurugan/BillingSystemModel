@@ -13,3 +13,5 @@ This system integrates sales tracking, invoice generation, payment monitoring an
   - Add new product
   - Update product quantity
   - Fetch item sales analysis
+ 
+## Screenshots
