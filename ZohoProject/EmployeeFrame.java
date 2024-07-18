@@ -2,6 +2,7 @@ package ZohoProject;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Map;
 
 public class EmployeeFrame extends Frame {
     BillingDAO billingDAO = new BillingDAO();
@@ -40,7 +41,8 @@ public class EmployeeFrame extends Frame {
         });
         CustomerBalance.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                //new AddProductFrame();
+                billingDAO.fetchCustomerBalance();
+                fetchAndPrintCustomerBalances();
             }
         });
         printBill.addActionListener(new ActionListener() {
@@ -63,7 +65,6 @@ public class EmployeeFrame extends Frame {
         });
         frame.dispose();
     }
-
 
     private void showDialog(String title, String message) {
         Dialog dialog = new Dialog(this, title, true);
@@ -94,6 +95,13 @@ public class EmployeeFrame extends Frame {
         return true;
     }
 
+    private void fetchAndPrintCustomerBalances() {
+        Map<String, Double> balances = billingDAO.fetchCustomerBalance();
+        System.out.println("Customer Balances:");
+        for (Map.Entry<String, Double> entry : balances.entrySet()) {
+            System.out.println("Customer ID: " + entry.getKey() + ", Balance: " + entry.getValue());
+        }
+    }
 
     class Check extends Frame {
         Check() {
