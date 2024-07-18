@@ -33,6 +33,9 @@ The system uses three main tables: Customer, Product, and Bill.
 |Column Name|Data Type|
 |---|---|---|
 |customer_phoneNo|VARCHAR|
+
+
+
 customer_name	**VARCHAR**,
 membership_points	**DOUBLE**,
 customer_balance	**DOUBLE**
