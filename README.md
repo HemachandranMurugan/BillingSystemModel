@@ -65,6 +65,22 @@ The system uses three main tables: Customer, Product, and Bill.
 | Bill_Quantity  | INT       | Quantity of the product sold in the bill |
 
 
+## HOW TO RUN
+- Java JDK: Version 11 or above.
+- MySQL: Version 8.0 or above (or other supported database).
+- JDBC Driver: For MySQL, you need the mysql-connector-java driver.
+
+**DataBase Setup**
+1. Install MySQL
+2. Create a database
+3. Create Tables
+
+**JDBC Configuration**
+1. Add JDBC Driver: Download the mysql-connector-java JAR file from MySQL’s official website.
+   Place this JAR file in your project’s lib directory or add it as a dependency in your build tool (e.g., Maven or Gradle).
+2. Configure Database Connection: Update the JDBC connection settings in your Java code.
+   Typically, you will have a class for anaging database connections. 
+3. Update Connection Details: Replace your_database_name, your_username, and your_password with your actual MySQL database details.
 
 
 
