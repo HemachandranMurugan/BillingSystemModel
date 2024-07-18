@@ -6,9 +6,11 @@ import java.util.*;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
-
 public class BillingFrame extends Frame {
     BillingDAO billingDAO = new BillingDAO();
+    Bill bill=new Bill();
+    String Billno=billingDAO.getNextBillNumber();
+
 
     TextField dateField, productIdField, productNameField, productQuantityField, CustomerField;
     TextArea billTextArea;
@@ -17,6 +19,7 @@ public class BillingFrame extends Frame {
     Label totalBillLabel;
     List<String> billItems; // To keep track of added items
     private Map<String, Integer> productQuantityMap;
+    boolean paidStatus;
 
     public BillingFrame(String customerId,Frame AddcustomerFrame) {
         setTitle("Billing System");
@@ -51,15 +54,15 @@ public class BillingFrame extends Frame {
         });
 
         Label productNameLabel = new Label("Name:");
-        productNameLabel.setBounds(175, 125, 50, 25);
+        productNameLabel.setBounds(150, 125, 50, 25);
         productNameField = new TextField();
-        productNameField.setBounds(200, 125, 100, 25);
+        productNameField.setBounds(200, 125, 150, 25);
         productNameField.setEditable(false);
 
         Label productQuantityLabel = new Label("Quantity:");
         productQuantityLabel.setBounds(350, 125, 75, 25);
         productQuantityField = new TextField();
-        productQuantityField.setBounds(400, 125, 125, 25);
+        productQuantityField.setBounds(425, 125, 125, 25);
 
         Button Stock=new Button("Stock available");
         Stock.setBounds(100,175,100,25);
@@ -94,12 +97,31 @@ public class BillingFrame extends Frame {
 
         Button printButton = new Button("Print Bill");
         printButton.setBounds(350, 450, 100, 25);
+
+        Label totalamt=new Label("Total Bill Amount: ");
+        totalamt.setBounds(50, 450, 150, 25);
+
+        totalBillLabel = new Label(" 0.0");
+        totalBillLabel.setBounds(200, 450, 50, 25);
+
+        Checkbox paid=new Checkbox("Paid");
+        paid.setBounds(100, 475, 50, 50);
+
+        Checkbox unpaid = new Checkbox("Unpaid");
+        unpaid.setBounds(175, 475, 50, 50);
+
+        Label AmtPaid = new Label("AmtPaid:");
+        AmtPaid.setBounds(250, 490, 50, 25);
+
+        TextField paidField = new TextField();
+        paidField.setBounds(300, 490, 100, 25);
+
+
         printButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                //String customerId = CustomerField.getText();
                 Customer customer=billingDAO.getCustomerById(customerId);
-                //System.out.println("Print Bill button clicked");
                 printBill(customer);
+
                 billTextArea.setText("");
                 productIdField.setText("");
                 productNameField.setText("");
@@ -109,8 +131,29 @@ public class BillingFrame extends Frame {
             }
         });
 
-        totalBillLabel = new Label("Total Bill Amount: 0.0");
-        totalBillLabel.setBounds(100, 450, 200, 25);
+        class CheckboxListener implements ItemListener {
+            public void itemStateChanged(ItemEvent e) {
+                Checkbox checkbox = (Checkbox) e.getItemSelectable();
+                boolean isChecked = checkbox.getState();
+
+                if (checkbox == paid && isChecked) {
+                    System.out.println("Bill marked as Paid");
+                        paidStatus = true;
+                        bill.setPaidStatus(paidStatus);
+                } else if (checkbox == unpaid && isChecked) {
+                    System.out.println("Bill marked as Unpaid");
+                    paidStatus=false;
+                    bill.setPaidStatus(paidStatus);
+
+                    double amt=getTotalBillamt();
+                    double amtpaid=Double.parseDouble(paidField.getText());
+                    billingDAO.updateCustomerBalance(customerId,amt-amtpaid);
+                }
+            }
+        }
+        CheckboxListener listener = new CheckboxListener();
+        paid.addItemListener(listener);
+        unpaid.addItemListener(listener);
 
         add(dateLabel);add(dateField);add(productLabel);
         add(CustomerLabel);add(CustomerField);
@@ -118,7 +161,9 @@ public class BillingFrame extends Frame {
         add(productNameLabel);add(productNameField);
         add(productQuantityLabel);add(productQuantityField);
         add(Stock);add(addButton);add(clearLastItemButton);
-        add(billTextArea);add(printButton);add(totalBillLabel);
+        add(billTextArea);add(printButton);add(totalamt);add(totalBillLabel);
+        add(paid);add(unpaid);
+        add(paidField);add(AmtPaid);
 
 
         setLayout(null);
@@ -126,11 +171,9 @@ public class BillingFrame extends Frame {
         setVisible(true);
 
 
-
         serialNumber = 1;
         totalPrice = 0.0;
         billItems = new ArrayList<>(); // Initialize the list
-
 
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent we) {
@@ -140,7 +183,6 @@ public class BillingFrame extends Frame {
 
         AddcustomerFrame.dispose();
     }
-
 
 
     private void fillProductName() {
@@ -184,7 +226,7 @@ public class BillingFrame extends Frame {
 
         billItems.add(itemDetails); // Add the item to the list
 
-        totalBillLabel.setText("Total Bill Amount: " + totalPrice);
+        totalBillLabel.setText(" "+totalPrice);
 
 
         if (productQuantityMap.containsKey(productId)) {
@@ -193,9 +235,13 @@ public class BillingFrame extends Frame {
         } else {
             productQuantityMap.put(productId, quantity);
         }
-
-
         serialNumber++;
+    }
+
+    public Double getTotalBillamt(){
+        String Billamt=totalBillLabel.getText();
+        double totalamt=Double.parseDouble(Billamt);
+        return totalamt;
     }
 
     private void clearLastItem() {
@@ -217,20 +263,16 @@ public class BillingFrame extends Frame {
         }
     }
 
-
     private String getCurrentDate() {
         SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
         Date date = new Date();
         return formatter.format(date);
     }
 
-
-
     public void printBill(Customer customer) {
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
         Date date = new Date();
         String currentDate = formatter.format(date);
-        String Billno=billingDAO.getNextBillNumber();
 
         System.out.println("G.M.H Stores");
         System.out.println("Date: " + currentDate+"\t\t\tBill NO: "+Billno);
@@ -301,15 +343,14 @@ public class BillingFrame extends Frame {
         System.out.println("***Thank you**\n**Visit again***");
         System.out.println();
 
-        Bill bill = new Bill();
         bill.setBillNo(Billno);
         bill.setbillamt(totalBillAmount);
         bill.setDate(currentDate);
         bill.setCustomerid(customer.getCustomerPhoneNo());
         bill.setDiscount(Discount);
+        bill.setPaidStatus(paidStatus);
 
         billingDAO.insertBill(bill);
-
 
 
         for (Map.Entry<String, Integer> entry : productQuantityMap.entrySet()) {
@@ -318,12 +359,7 @@ public class BillingFrame extends Frame {
             billingDAO.insertItemSales(productId,Billno,quantity);
         }
     }
-
-
-
 }
-
-
 
 class StockFrame extends Frame {
     BillingDAO billingDAO = new BillingDAO();
@@ -365,6 +401,3 @@ class StockFrame extends Frame {
         }
     }
 }
-
-
-
