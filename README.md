@@ -81,6 +81,7 @@ The system uses three main tables: Customer, Product, and Bill.
 2. Configure Database Connection: Update the JDBC connection settings in your Java code.
    Typically, you will have a class for anaging database connections. 
 3. Update Connection Details: Replace your_database_name, your_username, and your_password with your actual MySQL database details.
+  ![Screenshot 2024-07-19 003907](https://github.com/user-attachments/assets/73b64b49-5851-487b-9afd-de738db29849)
 
 
 
