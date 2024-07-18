@@ -28,8 +28,6 @@ This system integrates sales tracking, invoice generation, payment monitoring an
 ## Database Schema
 The system uses three main tables: Customer, Product, and Bill.
 
-### Tables in README
-
 #### Table 1: Customer Table
 
 | Field Name      | Data Type | Description                   |
@@ -68,28 +66,6 @@ The system uses three main tables: Customer, Product, and Bill.
 
 
 
-**Product Table**
-Column Name	Data Type
-product_id	VARCHAR
-product_name	VARCHAR
-price	DOUBLE
-quantity	INT
-
-**Bill Table**
-Column Name	Data Type
-bill_no	VARCHAR
-bill_date	DATE
-bill_amt	DOUBLE
-bill_discount	DOUBLE
-customer_id	VARCHAR
-
-
-**ItemSales Table**
-Column Name	Data Type
-product_id	VARCHAR
-bill_no	VARCHAR
-bill_quantity	INT
-  
 
 
 
