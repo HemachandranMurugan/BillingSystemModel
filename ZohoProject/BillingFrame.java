@@ -2,232 +2,398 @@ package ZohoProject;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.*;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
-public class EmployeeFrame extends Frame {
+public class BillingFrame extends Frame {
     BillingDAO billingDAO = new BillingDAO();
+    Bill bill=new Bill();
+    String Billno=billingDAO.getNextBillNumber();
 
-     EmployeeFrame(Frame frame) {
-        setTitle("Employee DashBoard");
+    TextField dateField, productIdField, productNameField, productQuantityField, CustomerField;
+    TextArea billTextArea;
+    int serialNumber;
+    double totalPrice;
+    Label totalBillLabel;
+    List<String> billItems; // To keep track of added items
+    private Map<String, Integer> productQuantityMap;
+    boolean paidStatus;
 
-        Button allInvoices = new Button("Fetch Invoices");
-        allInvoices.setBounds(150, 75, 200, 50);
+    public BillingFrame(String customerId,Frame AddcustomerFrame) {
+        setTitle("Billing System");
 
-        Button paidInvoices = new Button("PaidInvoices");
-        paidInvoices.setBounds(150, 150, 200, 50);
+        productQuantityMap = new HashMap<>();
+        Label dateLabel = new Label("Date:");
+        dateLabel.setBounds(50, 50, 50, 25);
+        dateField = new TextField();
+        dateField.setBounds(100, 50, 100, 25);
+        dateField.setText(getCurrentDate());
+        dateField.setEditable(false);
 
-        Button CustomerBalance = new Button("Customer Balance");
-        CustomerBalance.setBounds(150, 225, 200, 50);
+        Label CustomerLabel = new Label("Customer ID:");
+        CustomerLabel.setBounds(300, 50, 100, 25);
+        CustomerField = new TextField(customerId);
+        CustomerField.setBounds(400, 50, 125, 25);
+        CustomerField.setEditable(false);
 
-        Button printBill = new Button("printBill");
-        printBill.setBounds(150, 300, 200, 50);
+        Label productLabel = new Label("Product:");
+        productLabel.setBounds(50, 100, 75, 25);
 
-        add(allInvoices);
-        add(paidInvoices);
-        add(CustomerBalance);
-        add(printBill);
+        Label productIdLabel = new Label("ID:");
+        productIdLabel.setBounds(50, 125, 25, 25);
+        productIdField = new TextField();
+        productIdField.setBounds(75, 125, 75, 25);
 
-
-        allInvoices.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                //fetchAndPrintBill();
-                 new billno();
+        productIdField.addKeyListener(new KeyAdapter() {
+            public void keyReleased(KeyEvent e) {
+                fillProductName();
             }
         });
-        paidInvoices.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                //new AddProductFrame();
-            }
-        });
-        CustomerBalance.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                billingDAO.fetchCustomerBalance();
-                fetchAndPrintCustomerBalances();
-            }
-        });
-        printBill.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
 
-                new Check();
+        Label productNameLabel = new Label("Name:");
+        productNameLabel.setBounds(150, 125, 50, 25);
+        productNameField = new TextField();
+        productNameField.setBounds(200, 125, 150, 25);
+        productNameField.setEditable(false);
+
+        Label productQuantityLabel = new Label("Quantity:");
+        productQuantityLabel.setBounds(350, 125, 75, 25);
+        productQuantityField = new TextField();
+        productQuantityField.setBounds(425, 125, 125, 25);
+
+        Button Stock=new Button("Stock available");
+        Stock.setBounds(100,175,100,25);
+        Stock.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                 new StockFrame();
             }
         });
+
+        Button addButton = new Button("Add to Bill");
+        addButton.setBounds(250, 175, 100, 25);
+        addButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                //System.out.println("Add to Bill button clicked");
+                addItemToBill();
+            }
+        });
+
+        Button clearLastItemButton = new Button("Clear Last Item");
+        clearLastItemButton.setBounds(400, 175, 100, 25);
+        clearLastItemButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                clearLastItem();
+            }
+        });
+
+        billTextArea = new TextArea();
+        billTextArea.setBounds(100, 225, 400, 200);
+        billTextArea.setEditable(false);
+        billTextArea.setFont(new Font("Courier", Font.PLAIN, 12));
+        billTextArea.setText(String.format("%-6s%-15s%-10s%-10s%-15s\n", "S.No", "Name", "Price", "Quantity", "Total Price"));
+
+        Button printButton = new Button("Print Bill");
+        printButton.setBounds(350, 450, 100, 25);
+
+        Label totalamt=new Label("Total Bill Amount: ");
+        totalamt.setBounds(50, 450, 150, 25);
+
+        totalBillLabel = new Label(" 0.0");
+        totalBillLabel.setBounds(200, 450, 50, 25);
+
+        Checkbox paid=new Checkbox("Paid");
+        paid.setBounds(100, 475, 50, 50);
+
+        Checkbox unpaid = new Checkbox("Unpaid");
+        unpaid.setBounds(175, 475, 50, 50);
+
+        Label AmtPaid = new Label("AmtPaid:");
+        AmtPaid.setBounds(250, 490, 50, 25);
+
+        TextField paidField = new TextField();
+        paidField.setBounds(300, 490, 100, 25);
+
+
+        printButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                Customer customer=billingDAO.getCustomerById(customerId);
+                printBill(customer);
+
+                billTextArea.setText("");
+                productIdField.setText("");
+                productNameField.setText("");
+                productQuantityField.setText("");
+                totalBillLabel.setText("");
+
+            }
+        });
+
+        class CheckboxListener implements ItemListener {
+            public void itemStateChanged(ItemEvent e) {
+                Checkbox checkbox = (Checkbox) e.getItemSelectable();
+                boolean isChecked = checkbox.getState();
+
+                if (checkbox == paid && isChecked) {
+                    System.out.println("Bill marked as Paid");
+                        paidStatus = true;
+                        bill.setPaidStatus(paidStatus);
+                } else if (checkbox == unpaid && isChecked) {
+                    System.out.println("Bill marked as Unpaid");
+                    paidStatus=false;
+                    bill.setPaidStatus(paidStatus);
+
+                    double amt=getTotalBillamt();
+                    double amtpaid=Double.parseDouble(paidField.getText());
+                    billingDAO.updateCustomerBalance(customerId,amt-amtpaid);
+                }
+            }
+        }
+        CheckboxListener listener = new CheckboxListener();
+        paid.addItemListener(listener);
+        unpaid.addItemListener(listener);
+
+        add(dateLabel);add(dateField);add(productLabel);
+        add(CustomerLabel);add(CustomerField);
+        add(productIdLabel);add(productIdField);
+        add(productNameLabel);add(productNameField);
+        add(productQuantityLabel);add(productQuantityField);
+        add(Stock);add(addButton);add(clearLastItemButton);
+        add(billTextArea);add(printButton);add(totalamt);add(totalBillLabel);
+        add(paid);add(unpaid);
+        add(paidField);add(AmtPaid);
+
 
         setLayout(null);
-        setSize(500, 500);
+        setSize(600, 550);
         setVisible(true);
+
+
+        serialNumber = 1;
+        totalPrice = 0.0;
+        billItems = new ArrayList<>(); // Initialize the list
 
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent we) {
-                Main frame = new Main();
-                setEnabled(true);
                 dispose();
             }
         });
-        frame.dispose();
+
+        AddcustomerFrame.dispose();
     }
 
-    private void showDialog(String title, String message) {
-        Dialog dialog = new Dialog(this, title, true);
-        dialog.setLayout(new FlowLayout());
-        dialog.add(new Label(message));
-        Button okButton = new Button("OK");
-        okButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                dialog.setVisible(false);
-                dialog.dispose();
+
+    private void fillProductName() {
+        String productId = productIdField.getText();
+        String productName = billingDAO.getProductNameById(productId);
+        if (productName != null) {
+            productNameField.setText(productName);
+        } else {
+            productNameField.setText("");
+        }
+    }
+
+
+    private void addItemToBill() {
+        String productId = productIdField.getText();
+        String productName = productNameField.getText();
+        String quantityStr = productQuantityField.getText();
+
+
+        if (productId.isEmpty() || productName.isEmpty() || quantityStr.isEmpty()) {
+            System.out.println("All fields must be filled.");
+            return;
+        }
+        int quantity;
+
+        try {
+            quantity = Integer.parseInt(quantityStr);
+        } catch (NumberFormatException e) {
+            System.out.println("Quantity must be a number.");
+            return;
+        }
+        billingDAO.updateProductQuantity(productId,quantity);
+
+        double price = billingDAO.getProductPriceById(productId);
+        double itemTotalPrice = price * quantity;
+        totalPrice += itemTotalPrice;
+
+        String itemDetails = String.format("%-6d%-15s%-10.2f%-10d%-15.2f\n", serialNumber, productName, price, quantity, itemTotalPrice);
+
+        billTextArea.append(itemDetails);
+
+        billItems.add(itemDetails); // Add the item to the list
+
+        totalBillLabel.setText(" "+totalPrice);
+
+
+        if (productQuantityMap.containsKey(productId)) {
+            int currentQuantity = productQuantityMap.get(productId);
+            productQuantityMap.put(productId, currentQuantity + quantity);
+        } else {
+            productQuantityMap.put(productId, quantity);
+        }
+        serialNumber++;
+    }
+
+    public Double getTotalBillamt(){
+        String Billamt=totalBillLabel.getText();
+        double totalamt=Double.parseDouble(Billamt);
+        return totalamt;
+    }
+    private void clearLastItem() {
+        if (!billItems.isEmpty()) {
+            String lastItem = billItems.remove(billItems.size() - 1);
+            String[] details = lastItem.trim().split("\\s+");
+
+            if (details.length == 5) {
+                double itemTotalPrice = Double.parseDouble(details[4]);
+                totalPrice -= itemTotalPrice;
             }
-        });
-        dialog.add(okButton);
-        dialog.setSize(300, 100);
-        dialog.setVisible(true);
-    }
-
-    private boolean isValidPhoneNumber(String phoneNo) {
-        // Check if the phone number has at least 10 digits and contains only digits
-        if (phoneNo.length() < 10) {
-            return false;
-        }
-        for (char c : phoneNo.toCharArray()) {
-            if (!Character.isDigit(c)) {
-                return false;
+            // Update the TextArea
+            billTextArea.setText(String.format("%-6s%-15s%-10s%-10s%-15s\n", "S.No", "Name", "Price", "Quantity", "Total Price"));
+            for (int i = 0; i < billItems.size(); i++) {
+                billTextArea.append(billItems.get(i));
             }
-        }
-        return true;
-    }
-
-    private void fetchAndPrintCustomerBalances() {
-        Map<String, Double> balances = billingDAO.fetchCustomerBalance();
-        System.out.println("Customer Balances:");
-        for (Map.Entry<String, Double> entry : balances.entrySet()) {
-            System.out.println("Customer ID: " + entry.getKey() + ", Balance: " + entry.getValue());
+            totalBillLabel.setText("Total Bill Amount: " + totalPrice);
+            serialNumber--;
         }
     }
 
-
-    class billno extends Frame{
-         billno(){
-             Label bill = new Label("Enter Bill No:");
-             bill.setBounds(150, 150, 100, 25);
-             TextField BIllNO = new TextField(); // Set the customer ID
-             BIllNO.setBounds(250, 150, 150, 25);
-             BIllNO.setEditable(true);
-
-             Button checkStatus = new Button("Fetch Invoice details");
-             checkStatus.setBounds(200, 200, 150, 25);
-
-             checkStatus.addActionListener(new ActionListener() {
-                 public void actionPerformed(ActionEvent e) {
-                     String BillNO = BIllNO.getText();
-                     fetchAndPrintBill(BillNO);
-                 }
-             });
-
-             add(bill);add(BIllNO);add(checkStatus);
-
-             setLayout(null);
-             setSize(500, 500);
-             setVisible(true);
-
-             addWindowListener(new WindowAdapter() {
-                 public void windowClosing(WindowEvent we) {
-                     Main frame = new Main();
-                     setEnabled(true);
-                     dispose();
-                 }
-             });
-         }
+    private String getCurrentDate() {
+        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
+        Date date = new Date();
+        return formatter.format(date);
     }
 
-    class Check extends Frame {
-        Check() {
-
-            Label CustomerLabel = new Label("Customer ID:");
-            CustomerLabel.setBounds(150, 150, 100, 25);
-            TextField customerField = new TextField(); // Set the customer ID
-            customerField.setBounds(250, 150, 150, 25);
-            customerField.setEditable(true);
-
-            Button checkStatus = new Button("CheckStatus");
-            checkStatus.setBounds(200, 200, 100, 25);
-
-            checkStatus.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                    String customerId = customerField.getText();// Fetch customer ID here
-                    // Validate the phone number length and content
-                    if (!isValidPhoneNumber(customerId)) {
-                        showDialog("Error", "Please enter a valid phone number");
-                        return;
-                    }
-                    if (!billingDAO.customerExists(customerId)) {
-                        new AddCustomerFrame(customerId, Check.this);
-
-                    } else {
-                        new BillingFrame(customerId, Check.this); // Pass customerId to BillingFrame constructor
-                    }
-                }
-            });
-
-            add(CustomerLabel);
-            add(customerField);
-            add(checkStatus);
-
-
-            setLayout(null);
-            setSize(500, 500);
-            setVisible(true);
-
-            addWindowListener(new WindowAdapter() {
-                public void windowClosing(WindowEvent we) {
-                    Main frame = new Main();
-                    setEnabled(true);
-                    dispose();
-                }
-            });
-        }
-
-    }
-
-    private void fetchAndPrintBill(String billNo) {
-        List<String> billDetails = billingDAO.fetchBillDetails(billNo);
-
-        // Print header
+    public void printBill(Customer customer) {
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-        String currentDate = formatter.format(new Date());
+        Date date = new Date();
+        String currentDate = formatter.format(date);
 
         System.out.println("G.M.H Stores");
-        System.out.println("Date: " + currentDate + "\t\t\tBill NO: " + billNo);
+        System.out.println("Date: " + currentDate+"\t\t\tBill NO: "+Billno);
+        System.out.println("Customer ID: " + customer.getCustomerPhoneNo()+"\t \t CustomerName: "+customer.getCustomerName());
         System.out.println("--------------------------------------------------------------");
         System.out.println(String.format("%-6s%-15s%-10s%-10s%-15s", "S.No", "Name", "Price", "Quantity", "Total Price"));
 
         int serialNumber = 1;
         double totalAmount = 0.0;
+        double totalBillAmount;
+        double MembershipPoint=customer.getMembershipPoints();
+        double Discount = 0;
 
-        for (String detail : billDetails) {
-            String[] parts = detail.split("\t");
-            String productName = parts[5];
-            double price = Double.parseDouble(parts[6]);
-            int quantity = Integer.parseInt(parts[7]);
-            double totalPrice = Double.parseDouble(parts[8]);
+        for (String line : billItems) {
+            String[] parts = line.trim().split("\\s{2,}"); // Split by 2 or more spaces
 
-            System.out.println(String.format("%-6d%-15s%-10.2f%-10d%-15.2f", serialNumber, productName, price, quantity, totalPrice));
+            if (parts.length >= 5) {
+                String productName = parts[1].trim();
+                double price = Double.parseDouble(parts[2].trim());
+                int quantity = Integer.parseInt(parts[3].trim());
+                double itemTotalPrice = Double.parseDouble(parts[4].trim());
 
-            totalAmount += totalPrice;
-            serialNumber++;
+                System.out.println(String.format("%-6d%-15s%-10.2f%-10d%-15.2f", serialNumber, productName, price, quantity, itemTotalPrice));
+
+                totalAmount += itemTotalPrice;
+                serialNumber++;
+            }
+        }
+        System.out.println("--------------------------------------------------------------");
+
+
+        if(totalAmount>1000 && totalAmount<2000){
+            System.out.println("Discount 10% ");
+            totalBillAmount=totalAmount*0.9;
+            Discount=totalAmount*0.1;
+
+        }
+        else if(totalAmount>2000){
+            System.out.println("Discount 20%");
+            totalBillAmount=totalAmount*0.8;
+            Discount=totalAmount*0.2;
+        }
+        else{
+            totalBillAmount=totalAmount;
+
         }
 
-        double discount = Double.parseDouble(billDetails.get(0).split("\t")[4]);
-        double finalAmount = totalAmount - discount;
+        MembershipPoint=MembershipPoint+totalBillAmount*0.1;
 
-        // Print totals and footer
+        if(MembershipPoint>=1000){
+            MembershipPoint=MembershipPoint-1000;
+            totalBillAmount=totalBillAmount*0.9;
+            System.out.println("The Redeemed MemberShip Points = 10%");
+        }
+        customer.setMembershipPoints(MembershipPoint);
+
+
+        billingDAO.UpdateMembershipPoints(MembershipPoint,customer.getCustomerPhoneNo());
+
+
+        System.out.printf("\nThe earned Membership points: %.2f\n",MembershipPoint);
+
+        // Display total bill amount
+        System.out.println("Total Bill Amount: "+totalBillAmount);
+        System.out.println("Savings: " +(totalAmount-totalBillAmount));
+
         System.out.println("--------------------------------------------------------------");
-        System.out.println("Total Bill Amount: " + totalAmount);
-        System.out.println("Discount: " + discount);
-        System.out.println("Final Bill Amount: " + finalAmount);
-        System.out.println("--------------------------------------------------------------");
-        System.out.println("***Thank you**\n**Visit again***\n");
+        System.out.println("***Thank you**\n**Visit again***");
+        System.out.println();
+
+        bill.setBillNo(Billno);
+        bill.setbillamt(totalBillAmount);
+        bill.setDate(currentDate);
+        bill.setCustomerid(customer.getCustomerPhoneNo());
+        bill.setDiscount(Discount);
+        bill.setPaidStatus(paidStatus);
+
+        billingDAO.insertBill(bill);
+
+
+        for (Map.Entry<String, Integer> entry : productQuantityMap.entrySet()) {
+            String productId = entry.getKey();
+            int quantity = entry.getValue();
+            billingDAO.insertItemSales(productId,Billno,quantity);
+        }
+    }
+}
+class StockFrame extends Frame {
+    BillingDAO billingDAO = new BillingDAO();
+    TextArea stockTextArea;
+
+    public StockFrame() {
+        setTitle("Stock Availability");
+
+        stockTextArea = new TextArea();
+        stockTextArea.setBounds(50, 50, 400, 300);
+        stockTextArea.setEditable(false);
+        stockTextArea.setFont(new Font("Courier", Font.PLAIN, 12));
+
+        fillStockDetails();
+
+        add(stockTextArea);
+
+        setLayout(null);
+        setSize(500, 300);
+        setVisible(true);
+
+        addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent we) {
+                dispose();
+            }
+        });
+    }
+    private void fillStockDetails() {
+        List<Product> products = billingDAO.getAllProducts();
+        stockTextArea.setText(String.format("%-15s%-20s%-10s%-10s\n", "Product ID", "Product Name", "Price", "Quantity"));
+
+        for (Product product : products) {
+            stockTextArea.append(String.format("%-15s%-20s%-10.2f%-10d\n",
+                    product.getProductId(),
+                    product.getProductName(),
+                    product.getProductPrice(),
+                    product.getProductQuantity()));
+        }
     }
 
 }
