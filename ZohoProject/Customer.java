@@ -8,8 +8,7 @@ public class Customer {
     public double customerbalance;
 
     // Constructor
-    public Customer() {
-    }
+    public Customer() {}
 
     public Customer(String customerPhoneNo,String customerName,double membershipPoints,double customerbalance) {
         this.customerName = customerName;
@@ -44,8 +43,11 @@ public class Customer {
         this.membershipPoints = membershipPoints;
     }
 
-    public double getCustomerbalance(){return customerbalance;}
+    public double getCustomerbalance(){
+        return customerbalance;
+    }
 
-    public void setCustomerbalance(double customerbalance){ this.customerbalance=customerbalance;}
+    public void setCustomerbalance(double customerbalance){ 
+        this.customerbalance=customerbalance;
+    }
 }
-
