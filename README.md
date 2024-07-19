@@ -103,7 +103,7 @@ The system uses four main tables: Customer, Product, and Bill,Item Sales.
 
 
 ## GENERATED INVOICE
-![image](https://github.com/user-attachments/assets/d0fd38b6-00ab-4ef5-899e-585b603ee6da)
+![Screenshot 2024-07-19 221912](https://github.com/user-attachments/assets/f3c170f0-afb2-457a-b32e-9eef904b3466)
 
 
 
