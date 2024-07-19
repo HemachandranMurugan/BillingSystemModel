@@ -87,11 +87,11 @@ The system uses four main tables: Customer, Product, and Bill,Item Sales.
    
 4. Update Connection Details: Replace your_database_name, your_username, and your_password with your actual MySQL database details.
   
+  
   public class DataBaseConnection {
     private final String jdbcURL = "jdbc:mysql://localhost:3306/Your_database";
     private final String jdbcUsername = "user_name";
     private final String jdbcPassword = "  your_password";
-
     private Connection getConnection() throws SQLException {
         return DriverManager.getConnection(jdbcURL, jdbcUsername, jdbcPassword);
     }
