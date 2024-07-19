@@ -8,6 +8,7 @@ import java.awt.event.WindowEvent;
 public class AddCustomerFrame extends Frame {
     BillingDAO billingDAO = new BillingDAO();
     public AddCustomerFrame(String a,Frame EmployeeFrame) {
+        
         setTitle("Add New Customer");
 
         Label IDLabel = new Label("Customer ID Mobileno.:");
@@ -20,8 +21,7 @@ public class AddCustomerFrame extends Frame {
         nameLabel.setBounds(100, 200, 150, 25);
         TextField nameField = new TextField();
         nameField.setBounds(250, 200, 150, 25);
-
-
+        
         Button submit = new Button("Submit");
         submit.setBounds(300, 350, 100, 25);
 
@@ -34,21 +34,17 @@ public class AddCustomerFrame extends Frame {
         add(submit);
         add(proceedToBillingButton);
 
+        // add the new customer when submit button is clicked
         submit.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                // Fetch data from text fields
                 String customerName = nameField.getText();
                 String customerId = IDField.getText();
                 double MemberShipPoints = 0;
                 double customerbalance=0;
-                // Create a new Customer object
                 Customer customer = new Customer(customerId, customerName, MemberShipPoints,customerbalance);
-                // Insert the customer into the database
                 if(billingDAO.insertCustomer(customer)){
-                    // Optionally, show a confirmation dialog or clear the fields
                     nameField.setText("");
                     IDField.setText("");
-                    // Display a success message
                     showDialog("Success", "Customer added successfully!");
                     proceedToBillingButton.setEnabled(true);
                     submit.setEnabled(false);
@@ -57,29 +53,24 @@ public class AddCustomerFrame extends Frame {
                             new BillingFrame(customerId,AddCustomerFrame.this);
                         }
                     });
-
-
                 }
                 else{
                     showDialog("Error", "Failed to add customer. Please try again.");
                 }
-
             }
         });
         setLayout(null);
         setSize(500, 500);
         setVisible(true);
-
-
+        
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent we) {
                 dispose();
             }
         });
-
+        
         EmployeeFrame.dispose();
     }
-
 
     private void showDialog(String title, String message) {
         Dialog dialog = new Dialog(this, title, true);
@@ -95,37 +86,5 @@ public class AddCustomerFrame extends Frame {
         dialog.add(okButton);
         dialog.setSize(300, 100);
         dialog.setVisible(true);
-    }
-
-
-    public static class ItemSales {
-        private String productId;
-        private String billNo;
-        private int quantity;
-
-        // Getters and Setters
-        public String getProductId() {
-            return productId;
-        }
-
-        public void setProductId(String productId) {
-            this.productId = productId;
-        }
-
-        public String getBillNo() {
-            return billNo;
-        }
-
-        public void setBillNo(String billNo) {
-            this.billNo = billNo;
-        }
-
-        public int getQuantity() {
-            return quantity;
-        }
-
-        public void setQuantity(int quantity) {
-            this.quantity = quantity;
-        }
     }
 }
