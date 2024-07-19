@@ -16,17 +16,13 @@ public class Product {
         this.productQuantity = productQuantity;
         this.price = price;
     }
-
     // Getters
-
     public String getProductId() {
         return productId;
     }
-
     public void setProductId(String productId) {
         this.productId = productId;
     }
-
     public void setProductName(String productName){
         this.productName=productName;
     }
@@ -39,16 +35,12 @@ public class Product {
     public int getProductQuantity() {
         return productQuantity;
     }
-
     public void setProductQuantity(int productQuantity){
         this.productQuantity=productQuantity;
     }
-
     public double getProductPrice() {
         return price;
     }
-
-
     public void setPrice(double price) {
         this.price = price;
     }
