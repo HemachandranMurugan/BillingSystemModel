@@ -19,7 +19,7 @@ public class BillingDAO {
 
     public boolean insertProduct(Product product) {
         String productId = getNextProductId(product.getProductType());
-        String sql = "INSERT INTO Product (product_id, product_name, product_type, product_price, product_quantity ) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Product (product_id, product_name, product_type, product_price, product_quantity,Unit ) VALUES (?, ?, ?, ?, ?,?)";
         try (Connection connection = getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, productId);
@@ -27,6 +27,7 @@ public class BillingDAO {
             ps.setString(3, product.getProductType());
             ps.setInt(4, product.getProductQuantity());
             ps.setDouble(5, product.getProductPrice());
+            ps.setString(6,product.getUnit());
             int rowsAffected = ps.executeUpdate();
             return rowsAffected > 0;
         } catch (SQLException e) {
