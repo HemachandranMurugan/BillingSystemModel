@@ -8,9 +8,9 @@ import java.awt.event.WindowEvent;
 
 public class AddProductFrame extends Frame {
     BillingDAO billingDAO=new BillingDAO();
-    
+
     AddProductFrame(){
-        
+
         setTitle("Add New Product");
 
         Label ProdcutName=new Label("Product name: ");
@@ -33,11 +33,23 @@ public class AddProductFrame extends Frame {
         TextField QuantityField=new TextField();
         QuantityField.setBounds(250, 250, 150, 25);
 
+        Label ProductUnit = new Label("Product Unit: ");
+        ProductUnit.setBounds(100, 300, 150, 25);
+        Choice UnitField = new Choice();
+        UnitField.add("kg");
+        UnitField.add("g");
+        UnitField.add("l");
+        UnitField.add("ml");
+        UnitField.add("pcs");
+        UnitField.setBounds(250, 300, 150, 25);
+
+
+
         Label ProdcutPrice=new Label("Product Price: ");
-        ProdcutPrice.setBounds(100, 300, 150, 25);
+        ProdcutPrice.setBounds(100, 350, 150, 25);
         TextField PriceField=new TextField();
-        PriceField.setBounds(250, 300, 150, 25);
-        
+        PriceField.setBounds(250, 350, 150, 25);
+
         Button Submit=new Button("Submit");
         Submit.setBounds(300, 400, 100, 25);
 
@@ -45,22 +57,24 @@ public class AddProductFrame extends Frame {
         add(ProductType);add(TypeField);
         add(ProductQuantity);add(QuantityField);
         add(ProdcutPrice);add(PriceField);
-        add(Submit);
+        add(Submit);add(ProductUnit);add(UnitField);
+
 
         Submit.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 String productName = nameField.getText();
                 String productType = TypeField.getSelectedItem();
                 int productQuantity;
+                String productUnit = UnitField.getSelectedItem();
                 int productPrice;
                 try {
                     productQuantity = Integer.parseInt(QuantityField.getText());
                     productPrice = Integer.parseInt(PriceField.getText());
                 } catch (NumberFormatException ex) {
-                    showDialog("Error", "Please enter valid numeric values for quantity, price, and tax.");
+                    showDialog("Error", "Please enter valid numeric values for quantity and price.");
                     return;
                 }
-                Product product = new Product(productName, productType,productPrice, productQuantity);
+                Product product = new Product(productName, productType, productPrice, productQuantity, productUnit);
                 if (billingDAO.insertProduct(product)) {
                     showDialog("Success", "Product added successfully!");
                 } else {
@@ -82,7 +96,7 @@ public class AddProductFrame extends Frame {
             }
         });
     }
-    
+
     private void showDialog(String title, String message) {
         Dialog dialog = new Dialog(this, title, true);
         dialog.setLayout(new FlowLayout());
