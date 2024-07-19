@@ -11,7 +11,7 @@ import java.text.SimpleDateFormat;
 public class BillingDAO {
     private final String jdbcURL = "jdbc:mysql://localhost:3306/billingSystemModel";
     private final String jdbcUsername = "root";
-    private final String jdbcPassword = "gmhemanth2003"; //your password
+    private final String jdbcPassword = "gmhemanth2003";
 
     private Connection getConnection() throws SQLException {
         return DriverManager.getConnection(jdbcURL, jdbcUsername, jdbcPassword);
@@ -456,4 +456,45 @@ public class BillingDAO {
         return customerBalances;
     }
 
+
+    public List<String> fetchBillDetails(String billNo) {
+        List<String> billDetails = new ArrayList<>();
+        String query = "SELECT b.Bill_No, b.Bill_Date, b.Customer_id, b.Bill_amt, b.Bill_discount, " +
+                "p.product_name, p.product_price, i.Bill_Quantity, (p.product_price * i.Bill_Quantity) AS TotalPrice " +
+                "FROM Bill b " +
+                "JOIN ItemSales i ON b.Bill_No = i.Bill_No " +
+                "JOIN Product p ON i.product_id = p.product_id " +
+                "WHERE b.Bill_No = ?";
+
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+
+            pstmt.setString(1, billNo);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                String billDetail = rs.getString("Bill_No") + "\t" +
+                        rs.getString("Bill_Date") + "\t" +
+                        rs.getString("Customer_id") + "\t" +
+                        rs.getDouble("Bill_amt") + "\t" +
+                        rs.getDouble("Bill_discount") + "\t" +
+                        rs.getString("product_name") + "\t" +
+                        rs.getDouble("product_price") + "\t" +
+                        rs.getInt("Bill_Quantity") + "\t" +
+                        rs.getDouble("TotalPrice");
+                billDetails.add(billDetail);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return billDetails;
+    }
+
+
 }
+
+
+
+
+
