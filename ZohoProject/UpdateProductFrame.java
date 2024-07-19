@@ -5,12 +5,10 @@ import java.awt.event.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-
 public class UpdateProductFrame extends Frame {
     BillingDAO billingDAO=new BillingDAO();
     TextField productIdField, productNameField, productQuantityField,productPriceField;
     Button updateButton;
-    Label statusLabel;
 
     public UpdateProductFrame() {
         setTitle("Update exisiting Product Quantity or Price");
@@ -46,17 +44,12 @@ public class UpdateProductFrame extends Frame {
 
 
         // Adding components to the frame
-        add(productIdLabel);
-        add(productIdField);
-        add(productNameLabel);
-        add(productNameField);
-        add(productQuantityLabel);
-        add(productQuantityField);
-        add(productPriceLabel);
-        add(productPriceField);
+        add(productIdLabel);add(productIdField);
+        add(productNameLabel);add(productNameField);
+        add(productQuantityLabel);add(productQuantityField);
+        add(productPriceLabel);add(productPriceField);
         add(updateButton);
-
-
+        
         // Add key listener to productIdField to fetch product name when the product ID changes
         productIdField.addKeyListener(new KeyAdapter() {
             public void keyReleased(KeyEvent e) {
@@ -98,13 +91,13 @@ public class UpdateProductFrame extends Frame {
         setSize(400, 350);
         setVisible(true);
 
-
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent we) {
                 dispose();
             }
         });
     }
+    
     private void fillProductName() {
         String productId = productIdField.getText();
         String productName = billingDAO.getProductNameById(productId);
