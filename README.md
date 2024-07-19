@@ -6,9 +6,9 @@ This system integrates sales tracking, invoice generation, payment monitoring an
 - **Admin Frame:**
   - Add new product
   - Update product quantity
-  - Fetch item sales analysis
-  - Get BIll Summary by date
-  - Get Customer Report by Customer Id
+  - Item sales analysis
+  - BIll Summary by date
+  - Customer Report by Customer Id
  
 - **Employee Frame:**
   - Generate invoices
@@ -26,7 +26,7 @@ This system integrates sales tracking, invoice generation, payment monitoring an
 3. Compile and run the application.
 
 ## Database Schema
-The system uses three main tables: Customer, Product, and Bill.
+The system uses four main tables: Customer, Product, and Bill,Item Sales.
 
 #### Table 1: Customer Table
 
