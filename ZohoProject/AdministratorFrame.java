@@ -5,6 +5,7 @@ import java.awt.event.*;
 
 public class AdministratorFrame extends Frame {
     BillingDAO billingDAO=new BillingDAO();
+
     AdministratorFrame(Frame frame){
         setTitle("Administrator DashBoard");
 
@@ -23,7 +24,6 @@ public class AdministratorFrame extends Frame {
         Button getCReport=new Button("GetCustomerReport");
         getCReport.setBounds(150,370,200,50);
 
-
         add(Addproduct);
         add(Updateproduct);
         add(getCReport);
@@ -40,27 +40,21 @@ public class AdministratorFrame extends Frame {
                 new UpdateProductFrame();
             }
         });
-
         getBSummary.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 new dateframe();
             }
         });
-
         getCReport.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                    billingDAO.getTotalPurchaseByCustomer();
                     billingDAO.displayTotalPurchaseByCustomer();
             }
         });
-
         ItemSalesAnalysis.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 new ProductSalesframe();
             }
         });
-
-
         setLayout(null);
         setSize(500,500);
         setVisible(true);
@@ -72,13 +66,9 @@ public class AdministratorFrame extends Frame {
                 dispose();
             }
         });
-
         frame.dispose();
     }
-
-
-
-
+    
     public class dateframe extends Frame{
         dateframe() {
             Label enterlabel = new Label("Enter Date: ");
@@ -89,16 +79,17 @@ public class AdministratorFrame extends Frame {
             next.setBounds(200, 150, 50, 25);
 
             add(enterlabel);add(date);add(next);
-
+            
             next.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     billingDAO.displaySalesDetailsByDate(date.getText());
                 }
             });
+            
             setLayout(null);
             setSize(300,300);
             setVisible(true);
-
+            
             addWindowListener(new WindowAdapter() {
                 public void windowClosing(WindowEvent we) {
                     dispose();
@@ -132,8 +123,6 @@ public class AdministratorFrame extends Frame {
                     dispose();
                 }
             });
-
-
         }
     }
 }
