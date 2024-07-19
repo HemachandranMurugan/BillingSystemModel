@@ -8,7 +8,9 @@ import java.awt.event.WindowEvent;
 
 public class AddProductFrame extends Frame {
     BillingDAO billingDAO=new BillingDAO();
+    
     AddProductFrame(){
+        
         setTitle("Add New Product");
 
         Label ProdcutName=new Label("Product name: ");
@@ -35,8 +37,7 @@ public class AddProductFrame extends Frame {
         ProdcutPrice.setBounds(100, 300, 150, 25);
         TextField PriceField=new TextField();
         PriceField.setBounds(250, 300, 150, 25);
-
-
+        
         Button Submit=new Button("Submit");
         Submit.setBounds(300, 400, 100, 25);
 
@@ -52,7 +53,6 @@ public class AddProductFrame extends Frame {
                 String productType = TypeField.getSelectedItem();
                 int productQuantity;
                 int productPrice;
-                int productTax;
                 try {
                     productQuantity = Integer.parseInt(QuantityField.getText());
                     productPrice = Integer.parseInt(PriceField.getText());
@@ -82,9 +82,7 @@ public class AddProductFrame extends Frame {
             }
         });
     }
-
-
-
+    
     private void showDialog(String title, String message) {
         Dialog dialog = new Dialog(this, title, true);
         dialog.setLayout(new FlowLayout());
