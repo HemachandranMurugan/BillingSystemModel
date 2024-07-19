@@ -456,6 +456,28 @@ public class BillingDAO {
         return customerBalances;
     }
 
+    public List<String> fetchInvoicesByStatus(boolean isPaid) {
+        List<String> invoices = new ArrayList<>();
+        String sql = "SELECT Bill_No, Bill_Date, Bill_amt, PaidInvoice FROM Bill WHERE PaidInvoice = ?";
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setBoolean(1, isPaid);
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                String billNo = resultSet.getString("Bill_No");
+                String billDate = resultSet.getString("Bill_Date");
+                double billAmt = resultSet.getDouble("Bill_amt");
+                boolean paidStatus = resultSet.getBoolean("PaidInvoice");
+
+                invoices.add(billNo + "\t" + billDate + "\t" + billAmt + "\t" + paidStatus);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return invoices;
+    }
 
     public List<String> fetchBillDetails(String billNo) {
         List<String> billDetails = new ArrayList<>();
@@ -490,5 +512,4 @@ public class BillingDAO {
 
         return billDetails;
     }
-    
 }
