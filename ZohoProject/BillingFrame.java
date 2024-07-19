@@ -13,14 +13,14 @@ public class BillingFrame extends Frame {
     int serialNumber;
     double totalPrice;
     boolean paidStatus;
-    
+
     List<String> billItems; // To keep track of added items
     private Map<String, Integer> productQuantityMap;
-    
+
     TextField productIdField,productNameField,productQuantityField;
     TextArea billTextArea;
     Label totalBillLabel;
-    
+
     public BillingFrame(String customerId,Frame AddcustomerFrame) {
         setTitle("Billing System");
 
@@ -44,7 +44,7 @@ public class BillingFrame extends Frame {
 
         Label productIdLabel = new Label("ID:");
         productIdLabel.setBounds(50, 125, 25, 25);
-        TextField productIdField = new TextField();
+        productIdField = new TextField();
         productIdField.setBounds(75, 125, 75, 25);
 
         productIdField.addKeyListener(new KeyAdapter() {
@@ -55,13 +55,13 @@ public class BillingFrame extends Frame {
 
         Label productNameLabel = new Label("Name:");
         productNameLabel.setBounds(150, 125, 50, 25);
-        TextField productNameField = new TextField();
+        productNameField = new TextField();
         productNameField.setBounds(200, 125, 150, 25);
         productNameField.setEditable(false);
 
         Label productQuantityLabel = new Label("Quantity:");
         productQuantityLabel.setBounds(350, 125, 75, 25);
-        TextField productQuantityField = new TextField();
+        productQuantityField = new TextField();
         productQuantityField.setBounds(425, 125, 125, 25);
 
         Button Stock=new Button("Stock available");
@@ -88,7 +88,7 @@ public class BillingFrame extends Frame {
             }
         });
 
-        TextArea billTextArea = new TextArea();
+        billTextArea = new TextArea();
         billTextArea.setBounds(100, 225, 400, 200);
         billTextArea.setEditable(false);
         billTextArea.setFont(new Font("Courier", Font.PLAIN, 12));
@@ -100,7 +100,7 @@ public class BillingFrame extends Frame {
         Label totalamt=new Label("Total Bill Amount: ");
         totalamt.setBounds(50, 450, 150, 25);
 
-        Label totalBillLabel = new Label(" 0.0");
+        totalBillLabel = new Label(" 0.0");
         totalBillLabel.setBounds(200, 450, 50, 25);
 
         Checkbox paid=new Checkbox("Paid");
@@ -129,7 +129,7 @@ public class BillingFrame extends Frame {
 
             }
         });
-        
+
         class CheckboxListener implements ItemListener {
             public void itemStateChanged(ItemEvent e) {
                 Checkbox checkbox = (Checkbox) e.getItemSelectable();
@@ -150,7 +150,7 @@ public class BillingFrame extends Frame {
                 }
             }
         }
-        
+
         CheckboxListener listener = new CheckboxListener();
         paid.addItemListener(listener);
         unpaid.addItemListener(listener);
@@ -164,11 +164,11 @@ public class BillingFrame extends Frame {
         add(billTextArea);add(printButton);add(totalamt);add(totalBillLabel);
         add(paid);add(unpaid);
         add(paidField);add(AmtPaid);
-        
+
         setLayout(null);
         setSize(600, 550);
         setVisible(true);
-        
+
         serialNumber = 1;
         totalPrice = 0.0;
         billItems = new ArrayList<>(); // Initialize the list
@@ -181,8 +181,9 @@ public class BillingFrame extends Frame {
 
         AddcustomerFrame.dispose();
     }
-    
+
     private void fillProductName() {
+
         String productId = productIdField.getText();
         String productName = billingDAO.getProductNameById(productId);
         if (productName != null) {
@@ -191,12 +192,12 @@ public class BillingFrame extends Frame {
             productNameField.setText("");
         }
     }
-    
+
     private void addItemToBill() {
         String productId = productIdField.getText();
         String productName = productNameField.getText();
         String quantityStr = productQuantityField.getText();
-        
+
         if (productId.isEmpty() || productName.isEmpty() || quantityStr.isEmpty()) {
             System.out.println("All fields must be filled.");
             return;
@@ -222,7 +223,7 @@ public class BillingFrame extends Frame {
         billItems.add(itemDetails); // Add the item to the list
 
         totalBillLabel.setText(" "+totalPrice);
-        
+
         if (productQuantityMap.containsKey(productId)) {
             int currentQuantity = productQuantityMap.get(productId);
             productQuantityMap.put(productId, currentQuantity + quantity);
@@ -237,7 +238,7 @@ public class BillingFrame extends Frame {
         double totalamt=Double.parseDouble(Billamt);
         return totalamt;
     }
-    
+
     private void clearLastItem() {
         if (!billItems.isEmpty()) {
             String lastItem = billItems.remove(billItems.size() - 1);
@@ -296,7 +297,7 @@ public class BillingFrame extends Frame {
             }
         }
         System.out.println("--------------------------------------------------------------");
-        
+
         if(totalAmount>1000 && totalAmount<2000){
             System.out.println("Discount 10% ");
             totalBillAmount=totalAmount*0.9;
@@ -321,7 +322,7 @@ public class BillingFrame extends Frame {
         customer.setMembershipPoints(MembershipPoint);
 
         billingDAO.UpdateMembershipPoints(MembershipPoint,customer.getCustomerPhoneNo());
-        
+
         System.out.printf("\nThe earned Membership points: %.2f\n",MembershipPoint);
 
         // Display total bill amount
@@ -370,7 +371,7 @@ class StockFrame extends Frame {
             }
         });
     }
-    
+
     private void fillStockDetails() {
         List<Product> products = billingDAO.getAllProducts();
         stockTextArea.setText(String.format("%-15s%-20s%-10s%-10s\n", "Product ID", "Product Name", "Price", "Quantity"));
