@@ -5,16 +5,18 @@ public class Product {
     private String productName;
     private String productType;
     private int productQuantity;
+    private String Unit;
     private double price;
 
     public Product(){
 
     }
-    public Product(String productName, String productType,double price, int productQuantity) {
+    public Product(String productName, String productType,double price, int productQuantity,String Unit) {
         this.productName = productName;
         this.productType = productType;
         this.productQuantity = productQuantity;
         this.price = price;
+        this.Unit=Unit;
     }
     // Getters
     public String getProductId() {
@@ -43,5 +45,11 @@ public class Product {
     }
     public void setPrice(double price) {
         this.price = price;
+    }
+    public String getUnit() {
+        return Unit;
+    }
+    public void setUnit(String unit) {
+        this.Unit = unit;
     }
 }
