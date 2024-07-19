@@ -46,6 +46,8 @@ The system uses four main tables: Customer, Product, and Bill,Item Sales.
 | product_type | VARCHAR   | Type of the product               |
 | unit_price   | DOUBLE    | Price per unit of the product     |
 | quantity     | INT       | Available quantity in stock       |
+| unit         | VARCHAR   | Unit of the product               |
+
 
 #### Table 3: Bill Table
 
