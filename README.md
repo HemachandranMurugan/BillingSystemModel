@@ -77,15 +77,24 @@ The system uses four main tables: Customer, Product, and Bill,Item Sales.
 
 **JDBC Configuration**
 1. Add JDBC Driver: Download the mysql-connector-java JAR file from MySQL’s official website.
-   Place this JAR file in your project’s lib directory or add it as a dependency in your build tool (e.g., Maven or Gradle).
-   ![Screenshot 2024-07-19 085146](https://github.com/user-attachments/assets/f388368d-9616-4322-a1bf-d9d4a3c1c004)
-
+  Place this JAR file in your project’s lib directory or add it as a dependency in your build tool (e.g., Maven or Gradle).
   ![Screenshot 2024-07-19 085052](https://github.com/user-attachments/assets/fcf2602e-5b2f-4288-b26d-a882bb911480)
+
+  ![Screenshot 2024-07-19 085146](https://github.com/user-attachments/assets/f388368d-9616-4322-a1bf-d9d4a3c1c004)
+
 3. Configure Database Connection: Update the JDBC connection settings in your Java code.
    Typically, you will have a class for anaging database connections.
    
 4. Update Connection Details: Replace your_database_name, your_username, and your_password with your actual MySQL database details.
-  ![Screenshot 2024-07-19 003907](https://github.com/user-attachments/assets/73b64b49-5851-487b-9afd-de738db29849)
+  
+  public class DataBaseConnection {
+    private final String jdbcURL = "jdbc:mysql://localhost:3306/Your_database";
+    private final String jdbcUsername = "user_name";
+    private final String jdbcPassword = "  your_password";
+
+    private Connection getConnection() throws SQLException {
+        return DriverManager.getConnection(jdbcURL, jdbcUsername, jdbcPassword);
+    }
 
 
 
