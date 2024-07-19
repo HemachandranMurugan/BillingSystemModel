@@ -57,24 +57,24 @@ public class BillingFrame extends Frame {
         Label productNameLabel = new Label("Name:");
         productNameLabel.setBounds(160, 125, 45, 25);
         productNameField = new TextField();
-        productNameField.setBounds(180, 125, 100, 25);
+        productNameField.setBounds(205, 125, 100, 25);
         productNameField.setEditable(false);
 
 
         Label productQuantityLabel = new Label("Quantity:");
-        productQuantityLabel.setBounds(300, 125, 75, 25);
+        productQuantityLabel.setBounds(305, 125, 75, 25);
         productQuantityField = new TextField();
-        productQuantityField.setBounds(375, 125, 75, 25);
+        productQuantityField.setBounds(380, 125, 75, 25);
 
         Label unitLabel = new Label("Unit:");
-        unitLabel.setBounds(470, 125, 50, 25);
+        unitLabel.setBounds(475, 125, 50, 25);
         UnitField = new Choice();
         UnitField.add("kg");
         UnitField.add("g");
         UnitField.add("l");
         UnitField.add("ml");
         UnitField.add("pcs");
-        UnitField.setBounds(520, 125, 50, 25);
+        UnitField.setBounds(525, 125, 50, 25);
 
         Button Stock = new Button("Stock available");
         Stock.setBounds(100, 175, 100, 25);
@@ -323,6 +323,7 @@ public class BillingFrame extends Frame {
         } else {
             totalBillAmount = totalAmount;
         }
+
         membershipPoint = membershipPoint + totalBillAmount * 0.1;
         if (membershipPoint >= 1000) {
             membershipPoint = membershipPoint - 1000;
@@ -330,7 +331,9 @@ public class BillingFrame extends Frame {
             System.out.println("The Redeemed Membership Points = 10%");
         }
         customer.setMembershipPoints(membershipPoint);
+
         billingDAO.UpdateMembershipPoints(membershipPoint, customer.getCustomerPhoneNo());
+
         System.out.printf("\nThe earned Membership points: %.2f\n", membershipPoint);
 
         // Display total bill amount
@@ -357,7 +360,6 @@ public class BillingFrame extends Frame {
         }
     }
 
-
     class StockFrame extends Frame {
         BillingDAO billingDAO = new BillingDAO();
         TextArea stockTextArea;
@@ -379,7 +381,6 @@ public class BillingFrame extends Frame {
                 }
             });
         }
-
         private void fillStockDetails() {
             List<Product> products = billingDAO.getAllProducts();
             stockTextArea.setText(String.format("%-15s%-20s%-10s%-10s\n", "Product ID", "Product Name", "Price", "Quantity"));
