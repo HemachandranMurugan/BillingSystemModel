@@ -29,7 +29,7 @@ public class EmployeeFrame extends Frame {
         add(paidInvoices);
         add(CustomerBalance);
         add(printBill);
-        
+
         allInvoices.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                  new fetchbillframe();
@@ -113,7 +113,7 @@ public class EmployeeFrame extends Frame {
         System.out.println("\nUnpaid Invoices:");
         printUnpaidInvoices(unpaidInvoices);
     }
-    
+
     class fetchbillframe extends Frame{
          fetchbillframe(){
              Label bill = new Label("Enter Bill No:");
@@ -194,18 +194,25 @@ public class EmployeeFrame extends Frame {
             });
         }
     }
-    
+
     private void fetchAndPrintBill(String billNo) {
         List<String> billDetails = billingDAO.fetchBillDetails(billNo);
-        
+
         // Print header
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
         String currentDate = formatter.format(new Date());
 
+        // Assuming the first entry contains the common bill details
+        String[] firstBillDetail = billDetails.get(0).split("\t");
+        String billDate = firstBillDetail[1];  // Assuming the second column is the Bill_Date
+        String customerId = firstBillDetail[2];  // Assuming the third column is the Customer_id
+        double discount = Double.parseDouble(firstBillDetail[4]);  // Assuming the fifth column is the Bill_discount
+
         System.out.println("G.M.H Stores");
         System.out.println("Date: " + currentDate + "\t\t\tBill NO: " + billNo);
+        System.out.println("Bill Date: " + billDate + "\t\t\tCustomer ID: " + customerId);
         System.out.println("--------------------------------------------------------------");
-        System.out.println(String.format("%-6s%-15s%-10s%-10s%-15s", "S.No", "Name", "Price", "Quantity", "Total Price"));
+        System.out.println(String.format("%-6s%-20s%-10s%-10s%-10s%-15s", "S.No", "Name", "Price", "Quantity", "Unit", "Total Price"));
 
         int serialNumber = 1;
         double totalAmount = 0.0;
@@ -214,16 +221,16 @@ public class EmployeeFrame extends Frame {
             String[] parts = detail.split("\t");
             String productName = parts[5];
             double price = Double.parseDouble(parts[6]);
-            int quantity = Integer.parseInt(parts[7]);
-            double totalPrice = Double.parseDouble(parts[8]);
+            String unit = parts[7];  // Assuming the eighth column is the unit
+            int quantity = Integer.parseInt(parts[8]);
+            double totalPrice = Double.parseDouble(parts[9]);
 
-            System.out.println(String.format("%-6d%-15s%-10.2f%-10d%-15.2f", serialNumber, productName, price, quantity, totalPrice));
+            System.out.println(String.format("%-6d%-20s%-10.2f%-10d%-10s%-15.2f", serialNumber, productName, price, quantity, unit, totalPrice));
 
             totalAmount += totalPrice;
             serialNumber++;
         }
 
-        double discount = Double.parseDouble(billDetails.get(0).split("\t")[4]);
         double finalAmount = totalAmount - discount;
 
         // Print totals and footer
@@ -234,9 +241,7 @@ public class EmployeeFrame extends Frame {
         System.out.println("--------------------------------------------------------------");
         System.out.println("***Thank you**\n**Visit again***\n");
     }
-    
-    
-    
+
 
     private void printPaidInvoices(List<String> invoices) {
         if (invoices.isEmpty()) {
@@ -251,8 +256,6 @@ public class EmployeeFrame extends Frame {
             System.out.println("Bill No: " + billNo + ", Customer ID: " + customerId);
         }
     }
-    
-    
 
     private void printUnpaidInvoices(List<String> invoices) {
         if (invoices.isEmpty()) {
