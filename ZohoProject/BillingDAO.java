@@ -399,7 +399,7 @@ public class BillingDAO {
         int totalQuantity = 0;
 
         System.out.println("Product ID: " + productId);
-        System.out.println(String.format("%-15s%-15s%-15s", "Bill No", "Quantity", "Total Quantity"));
+        System.out.println(String.format("%-15s%-15s%", "Bill No", "Quantity"));
 
         for (ItemSales itemSales : itemSalesList) {
             String billNo = itemSales.getBillNo();
