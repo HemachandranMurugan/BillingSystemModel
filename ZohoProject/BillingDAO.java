@@ -483,7 +483,7 @@ public class BillingDAO {
     public List<String> fetchBillDetails(String billNo) {
         List<String> billDetails = new ArrayList<>();
         String query = "SELECT b.Bill_No, b.Bill_Date, b.Customer_id, b.Bill_amt, b.Bill_discount, " +
-                "p.product_name, p.product_price, i.Bill_Quantity, (p.product_price * i.Bill_Quantity) AS TotalPrice " +
+                "p.product_name, p.product_price,p.unit,i.Bill_Quantity, (p.product_price * i.Bill_Quantity) AS TotalPrice " +
                 "FROM Bill b " +
                 "JOIN ItemSales i ON b.Bill_No = i.Bill_No " +
                 "JOIN Product p ON i.product_id = p.product_id " +
@@ -503,6 +503,7 @@ public class BillingDAO {
                         rs.getDouble("Bill_discount") + "\t" +
                         rs.getString("product_name") + "\t" +
                         rs.getDouble("product_price") + "\t" +
+                        rs.getString("unit")+"\t"+
                         rs.getInt("Bill_Quantity") + "\t" +
                         rs.getDouble("TotalPrice");
                 billDetails.add(billDetail);
