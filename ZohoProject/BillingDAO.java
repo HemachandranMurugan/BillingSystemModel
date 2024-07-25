@@ -172,11 +172,11 @@ public class BillingDAO {
         }
     }
 
-    public void updateProductQuantity(String productId, int newQuantity) {
-        String sql = "UPDATE Product SET product_quantity = product_quantity-? WHERE product_id = ?";
+    public void updateProductQuantity(String productId, int Quantity) {
+        String sql = "UPDATE Product SET product_quantity = ? WHERE product_id = ?";
         try (Connection connection = getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setInt(1, newQuantity);
+            ps.setInt(1, Quantity);
             ps.setString(2, productId);
             ps.executeUpdate();
         } catch (SQLException e) {
@@ -221,8 +221,6 @@ public class BillingDAO {
         String query = "SELECT * FROM Product WHERE product_id = ?";
         try (Connection connection=getConnection();
              PreparedStatement ps = connection.prepareStatement(query)){
-
-
             ps.setString(1, productId);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
@@ -231,6 +229,7 @@ public class BillingDAO {
                 product.setProductName(rs.getString("product_name"));
                 product.setPrice(rs.getDouble("product_price"));
                 product.setProductQuantity(rs.getInt("product_quantity"));
+                product.setUnit(rs.getString("unit"));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -401,22 +400,28 @@ public class BillingDAO {
     public void displayItemSalesDetailsByProductId(String productId) {
         List<ItemSales> itemSalesList = getItemSalesByProductId(productId);
         int totalQuantity = 0;
+        Product product = getProductById(productId);
+        String unit=product.getUnit();
 
         System.out.println("Product ID: " + productId);
-        System.out.println(String.format("%-15s%-15s", "Bill No", "Quantity"));
+        if (product != null) {
+            System.out.println("Product Name: " + product.getProductName());
+        } else {
+            System.out.println("Product Name: Not Found");
+        }
+        System.out.println(String.format("%-15s%-15s%-15s", "Bill No", "Quantity","Unit"));
 
         for (ItemSales itemSales : itemSalesList) {
             String billNo = itemSales.getBillNo();
             int quantity = itemSales.getQuantity();
             totalQuantity += quantity;
 
-            System.out.println(String.format("%-15s%-15d", billNo, quantity));
+            System.out.println(String.format("%-15s%-15d%-15s", billNo, quantity,unit));
         }
 
-        System.out.println("\nTotal Quantity Sold: " + totalQuantity);
+        System.out.println("\nTotal Quantity Sold: " + totalQuantity + " "+ unit);
     }
-
-
+    
     public List<Product> getAllProducts() {
         List<Product> products = new ArrayList<>();
         String query = "SELECT * FROM Product";
