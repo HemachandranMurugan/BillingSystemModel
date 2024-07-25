@@ -37,7 +37,7 @@ public class EmployeeFrame extends Frame {
         });
         paidInvoices.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-               fetchAndPrintInvoices();
+               fetchAndPrintInvoiceByStatus();
             }
         });
         CustomerBalance.addActionListener(new ActionListener() {
@@ -103,7 +103,7 @@ public class EmployeeFrame extends Frame {
         }
     }
 
-    private void fetchAndPrintInvoices() {
+    private void fetchAndPrintInvoiceByStatus() {
         List<String> paidInvoices = billingDAO.fetchInvoicesByStatus(true);
         List<String> unpaidInvoices = billingDAO.fetchInvoicesByStatus(false);
 
@@ -112,87 +112,6 @@ public class EmployeeFrame extends Frame {
 
         System.out.println("\nUnpaid Invoices:");
         printUnpaidInvoices(unpaidInvoices);
-    }
-
-    class fetchbillframe extends Frame{
-         fetchbillframe(){
-             Label bill = new Label("Enter Bill No:");
-             bill.setBounds(150, 150, 100, 25);
-             TextField BIllNO = new TextField(); // Set the customer ID
-             BIllNO.setBounds(250, 150, 150, 25);
-             BIllNO.setEditable(true);
-
-             Button checkStatus = new Button("Fetch Invoice details");
-             checkStatus.setBounds(200, 200, 150, 25);
-
-             checkStatus.addActionListener(new ActionListener() {
-                 public void actionPerformed(ActionEvent e) {
-                     String BillNO = BIllNO.getText();
-                     fetchAndPrintBill(BillNO);
-                 }
-             });
-
-             add(bill);add(BIllNO);add(checkStatus);
-
-             setLayout(null);
-             setSize(500, 500);
-             setVisible(true);
-
-             addWindowListener(new WindowAdapter() {
-                 public void windowClosing(WindowEvent we) {
-                     Main frame = new Main();
-                     setEnabled(true);
-                     dispose();
-                 }
-             });
-         }
-    }
-
-    class CheckCustomerframe extends Frame {
-        CheckCustomerframe() {
-
-            Label CustomerLabel = new Label("Customer ID:");
-            CustomerLabel.setBounds(150, 150, 100, 25);
-            TextField customerField = new TextField(); // Set the customer ID
-            customerField.setBounds(250, 150, 150, 25);
-            customerField.setEditable(true);
-
-            Button checkStatus = new Button("CheckStatus");
-            checkStatus.setBounds(200, 200, 100, 25);
-
-            checkStatus.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                    String customerId = customerField.getText();// Fetch customer ID here
-                    // Validate the phone number length and content
-                    if (!isValidPhoneNumber(customerId)) {
-                        showDialog("Error", "Please enter a valid phone number");
-                        return;
-                    }
-                    if (!billingDAO.customerExists(customerId)) {
-                        new AddCustomerFrame(customerId, CheckCustomerframe.this);
-
-                    } else {
-                        new BillingFrame(customerId, CheckCustomerframe.this); // Pass customerId to BillingFrame constructor
-                    }
-                }
-            });
-
-            add(CustomerLabel);
-            add(customerField);
-            add(checkStatus);
-
-
-            setLayout(null);
-            setSize(500, 500);
-            setVisible(true);
-
-            addWindowListener(new WindowAdapter() {
-                public void windowClosing(WindowEvent we) {
-                    setEnabled(true);
-                    dispose();
-                }
-            });
-        }
     }
 
     private void fetchAndPrintBill(String billNo) {
@@ -242,7 +161,6 @@ public class EmployeeFrame extends Frame {
         System.out.println("***Thank you**\n**Visit again***\n");
     }
 
-
     private void printPaidInvoices(List<String> invoices) {
         if (invoices.isEmpty()) {
             System.out.println("No paid invoices found.");
@@ -270,6 +188,88 @@ public class EmployeeFrame extends Frame {
             String customerId = parts[1];
             Double balance = customerBalances.get(customerId);
             System.out.println("Bill No: " + billNo + ", Customer ID: " + customerId + ", Balance: " + (balance != null ? balance : "N/A"));
+        }
+    }
+
+    class fetchbillframe extends Frame{
+        fetchbillframe(){
+            setTitle("Fetch Invoice") ;
+            Label bill = new Label("Enter Bill No:");
+            bill.setBounds(150, 150, 100, 25);
+            TextField BIllNO = new TextField(); // Set the customer ID
+            BIllNO.setBounds(250, 150, 150, 25);
+            BIllNO.setEditable(true);
+
+            Button checkStatus = new Button("Fetch Invoice details");
+            checkStatus.setBounds(200, 200, 150, 25);
+
+            checkStatus.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    String BillNO = BIllNO.getText();
+                    fetchAndPrintBill(BillNO);
+                }
+            });
+
+            add(bill);add(BIllNO);add(checkStatus);
+
+            setLayout(null);
+            setSize(500, 500);
+            setVisible(true);
+
+            addWindowListener(new WindowAdapter() {
+                public void windowClosing(WindowEvent we) {
+                    Main frame = new Main();
+                    setEnabled(true);
+                    dispose();
+                }
+            });
+        }
+    }
+
+    class CheckCustomerframe extends Frame {
+        CheckCustomerframe() {
+            setTitle("Check Customer");
+            Label CustomerLabel = new Label("Customer ID:");
+            CustomerLabel.setBounds(150, 150, 100, 25);
+            TextField customerField = new TextField(); // Set the customer ID
+            customerField.setBounds(250, 150, 150, 25);
+            customerField.setEditable(true);
+
+            Button checkStatus = new Button("CheckStatus");
+            checkStatus.setBounds(200, 200, 100, 25);
+
+            checkStatus.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    String customerId = customerField.getText();// Fetch customer ID here
+                    // Validate the phone number length and content
+                    if (!isValidPhoneNumber(customerId)) {
+                        showDialog("Error", "Please enter a valid phone number");
+                        return;
+                    }
+                    if (!billingDAO.customerExists(customerId)) {
+                        new AddCustomerFrame(customerId, CheckCustomerframe.this);
+
+                    } else {
+                        new BillingFrame(customerId, CheckCustomerframe.this); // Pass customerId to BillingFrame constructor
+                    }
+                }
+            });
+
+            add(CustomerLabel);
+            add(customerField);
+            add(checkStatus);
+
+
+            setLayout(null);
+            setSize(500, 500);
+            setVisible(true);
+
+            addWindowListener(new WindowAdapter() {
+                public void windowClosing(WindowEvent we) {
+                    setEnabled(true);
+                    dispose();
+                }
+            });
         }
     }
 }
