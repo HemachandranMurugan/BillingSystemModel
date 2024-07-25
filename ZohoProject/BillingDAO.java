@@ -199,23 +199,6 @@ public class BillingDAO {
         }
         return null;
     }
-
-    public double getProductPriceById(String productId) {
-        String sql = "SELECT product_price FROM Product WHERE product_id = ?";
-        try (Connection connection = getConnection();
-             PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setString(1, productId);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getDouble("product_price");
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return 0.0;
-    }
-
     public int getProductQuantityById(String productId) {
         String sql = "SELECT product_quantity FROM Product WHERE product_id = ?";
         try (Connection connection = getConnection();
@@ -231,6 +214,30 @@ public class BillingDAO {
         }
         return 0; // Return 0 if product not found or in case of any error
     }
+
+
+    public Product getProductById(String productId) {
+        Product product = null;
+        String query = "SELECT * FROM Product WHERE product_id = ?";
+        try (Connection connection=getConnection();
+             PreparedStatement ps = connection.prepareStatement(query)){
+
+
+            ps.setString(1, productId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                product = new Product();
+                product.setProductId(rs.getString("product_id"));
+                product.setProductName(rs.getString("product_name"));
+                product.setPrice(rs.getDouble("product_price"));
+                product.setProductQuantity(rs.getInt("product_quantity"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return product;
+    }
+
 
     public Map<Customer, Integer> getTotalPurchaseByCustomer() {
         Map<Customer, Integer> customerPurchases = new LinkedHashMap<>();
