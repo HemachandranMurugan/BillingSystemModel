@@ -221,7 +221,6 @@ public class BillingFrame extends Frame {
         }
 
         int quantity;
-
         try {
             quantity = Integer.parseInt(quantityStr);
         } catch (NumberFormatException e) {
@@ -235,7 +234,7 @@ public class BillingFrame extends Frame {
         }
 
         if (product != null && product.getProductQuantity() >= quantity) {
-            billingDAO.updateProductQuantity(productId, quantity);
+            billingDAO.updateProductQuantity(productId, product.getProductQuantity()-quantity);
 
             double price = product.getProductPrice();
             double itemTotalPrice = price * quantity;
@@ -244,8 +243,8 @@ public class BillingFrame extends Frame {
             String itemDetails = String.format("%-6d%-15s%-10.2f%-10d%-10s%-15.2f\n", serialNumber, productName, price, quantity, unit, itemTotalPrice);
 
             billTextArea.append(itemDetails);
-            billItems.add(itemDetails); // Add the item to the list
-            totalBillLabel.setText(" " + totalPrice);
+            billItems.add(productId + ":" + itemDetails); // Store product ID with item details
+            totalBillLabel.setText(String.format("%.2f", totalPrice));
 
             if (productQuantityMap.containsKey(productId)) {
                 int currentQuantity = productQuantityMap.get(productId);
@@ -254,8 +253,7 @@ public class BillingFrame extends Frame {
                 productQuantityMap.put(productId, quantity);
             }
             serialNumber++;
-        }
-            else {
+        } else {
             System.out.println("Requested quantity is not available.");
         }
     }
@@ -268,20 +266,49 @@ public class BillingFrame extends Frame {
 
     private void clearLastItem() {
         if (!billItems.isEmpty()) {
+            // Remove the last item
             String lastItem = billItems.remove(billItems.size() - 1);
-            String[] details = lastItem.trim().split("\\s+");
+            String[] parts = lastItem.split(":", 2); // Split by the first ':' to separate ID and details
+            String productId = parts[0];
+            String itemDetails = parts[1];
+            String[] details = itemDetails.trim().split("\\s+");
 
-            if (details.length == 5) {
-                double itemTotalPrice = Double.parseDouble(details[4]);
+            if (details.length >= 6) {
+                double itemTotalPrice = Double.parseDouble(details[5]);
+                int quantity = Integer.parseInt(details[3]);
+
+                // Decrease total price
                 totalPrice -= itemTotalPrice;
+                totalBillLabel.setText(String.format("%.2f", totalPrice));
+
+                // Increment product quantity in the database
+                Product product = billingDAO.getProductById(productId);
+
+                if (product != null) {
+                    billingDAO.updateProductQuantity(productId, product.getProductQuantity() + quantity);
+                }
+
+                // Update product quantity in the productQuantityMap
+                if (productQuantityMap.containsKey(productId)) {
+                    int currentQuantity = productQuantityMap.get(productId);
+                    productQuantityMap.put(productId, currentQuantity - quantity);
+                }
+
+                // Rebuild the TextArea content
+                billTextArea.setText(String.format("%-6s%-15s%-10s%-10s%-10s%-15s\n", "S.No", "Name", "Price", "Quantity", "Unit", "Total Price"));
+
+                int newSerialNumber = 1;
+                for (String item : billItems) {
+                    String[] itemParts = item.split(":", 2);
+                    String itemDetail = itemParts[1];
+                    String[] itemDetailsArray = itemDetail.trim().split("\\s+");
+                    if (itemDetailsArray.length >= 6) {
+                        double itemTotal = Double.parseDouble(itemDetailsArray[5]);
+                        String itemDetailString = String.format("%-6d%-15s%-10.2f%-10d%-10s%-15.2f\n", newSerialNumber++, itemDetailsArray[1], Double.parseDouble(itemDetailsArray[2]), Integer.parseInt(itemDetailsArray[3]), itemDetailsArray[4], itemTotal);
+                        billTextArea.append(itemDetailString);
+                    }
+                }
             }
-            // Update the TextArea
-            billTextArea.setText(String.format("%-6s%-15s%-10s%-10s%-15s\n", "S.No", "Name", "Price", "Quantity", "Total Price"));
-            for (int i = 0; i < billItems.size(); i++) {
-                billTextArea.append(billItems.get(i));
-            }
-            totalBillLabel.setText("Total Bill Amount: " + totalPrice);
-            serialNumber--;
         }
     }
 
@@ -396,7 +423,7 @@ public class BillingFrame extends Frame {
                 }
             });
         }
-        
+
         private void fillStockDetails() {
             List<Product> products = billingDAO.getAllProducts();
             stockTextArea.setText(String.format("%-15s%-20s%-10s%-10s%-10s\n", "Product ID", "Product Name", "Price", "Quantity", "Unit"));
