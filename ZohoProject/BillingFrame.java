@@ -192,13 +192,16 @@ public class BillingFrame extends Frame {
 
         AddcustomerFrame.dispose();
     }
-
     private void fillProductName() {
-
         String productId = productIdField.getText();
-        String productName = billingDAO.getProductNameById(productId);
-        if (productName != null) {
-            productNameField.setText(productName);
+        Product product = billingDAO.getProductById(productId);
+        if (product != null) {
+            if (product.getProductQuantity() > 0) {
+                productNameField.setText(product.getProductName());
+            } else {
+                productNameField.setText("Out of Stock");
+                System.out.println("Product is out of stock.");
+            }
         } else {
             productNameField.setText("");
         }
@@ -210,10 +213,13 @@ public class BillingFrame extends Frame {
         String quantityStr = productQuantityField.getText();
         String unit = UnitField.getSelectedItem();
 
+        Product product = billingDAO.getProductById(productId);
+
         if (productId.isEmpty() || productName.isEmpty() || quantityStr.isEmpty()) {
             System.out.println("All fields must be filled.");
             return;
         }
+
         int quantity;
 
         try {
@@ -222,27 +228,36 @@ public class BillingFrame extends Frame {
             System.out.println("Quantity must be a number.");
             return;
         }
-        billingDAO.updateProductQuantity(productId, quantity);
 
-        double price = billingDAO.getProductPriceById(productId);
-        double itemTotalPrice = price * quantity;
-        totalPrice += itemTotalPrice;
-
-        String itemDetails = String.format("%-6d%-15s%-10.2f%-10d%-10s%-15.2f\n", serialNumber, productName, price, quantity, unit, itemTotalPrice);
-
-        billTextArea.append(itemDetails);
-
-        billItems.add(itemDetails); // Add the item to the list
-
-        totalBillLabel.setText(" " + totalPrice);
-
-        if (productQuantityMap.containsKey(productId)) {
-            int currentQuantity = productQuantityMap.get(productId);
-            productQuantityMap.put(productId, currentQuantity + quantity);
-        } else {
-            productQuantityMap.put(productId, quantity);
+        if (productName.equals("Out of Stock")) {
+            System.out.println("Cannot add product that is out of stock.");
+            return;
         }
-        serialNumber++;
+
+        if (product != null && product.getProductQuantity() >= quantity) {
+            billingDAO.updateProductQuantity(productId, quantity);
+
+            double price = product.getProductPrice();
+            double itemTotalPrice = price * quantity;
+            totalPrice += itemTotalPrice;
+
+            String itemDetails = String.format("%-6d%-15s%-10.2f%-10d%-10s%-15.2f\n", serialNumber, productName, price, quantity, unit, itemTotalPrice);
+
+            billTextArea.append(itemDetails);
+            billItems.add(itemDetails); // Add the item to the list
+            totalBillLabel.setText(" " + totalPrice);
+
+            if (productQuantityMap.containsKey(productId)) {
+                int currentQuantity = productQuantityMap.get(productId);
+                productQuantityMap.put(productId, currentQuantity + quantity);
+            } else {
+                productQuantityMap.put(productId, quantity);
+            }
+            serialNumber++;
+        }
+            else {
+            System.out.println("Requested quantity is not available.");
+        }
     }
 
     public Double getTotalBillamt() {
@@ -381,6 +396,7 @@ public class BillingFrame extends Frame {
                 }
             });
         }
+
         private void fillStockDetails() {
             List<Product> products = billingDAO.getAllProducts();
             stockTextArea.setText(String.format("%-15s%-20s%-10s%-10s\n", "Product ID", "Product Name", "Price", "Quantity"));
