@@ -23,6 +23,7 @@ public class BillingFrame extends Frame {
     Label totalBillLabel;
 
     public BillingFrame(String customerId, Frame AddcustomerFrame) {
+
         setTitle("Billing System");
 
         productQuantityMap = new HashMap<>();
@@ -141,7 +142,6 @@ public class BillingFrame extends Frame {
 
             }
         });
-
         class CheckboxListener implements ItemListener {
             public void itemStateChanged(ItemEvent e) {
                 Checkbox checkbox = (Checkbox) e.getItemSelectable();
@@ -189,9 +189,9 @@ public class BillingFrame extends Frame {
                 dispose();
             }
         });
-
         AddcustomerFrame.dispose();
     }
+
     private void fillProductName() {
         String productId = productIdField.getText();
         Product product = billingDAO.getProductById(productId);
@@ -388,7 +388,7 @@ public class BillingFrame extends Frame {
             fillStockDetails();
             add(stockTextArea);
             setLayout(null);
-            setSize(500, 300);
+            setSize(500, 400);
             setVisible(true);
             addWindowListener(new WindowAdapter() {
                 public void windowClosing(WindowEvent we) {
@@ -396,17 +396,18 @@ public class BillingFrame extends Frame {
                 }
             });
         }
-
+        
         private void fillStockDetails() {
             List<Product> products = billingDAO.getAllProducts();
-            stockTextArea.setText(String.format("%-15s%-20s%-10s%-10s\n", "Product ID", "Product Name", "Price", "Quantity"));
+            stockTextArea.setText(String.format("%-15s%-20s%-10s%-10s%-10s\n", "Product ID", "Product Name", "Price", "Quantity", "Unit"));
 
             for (Product product : products) {
-                stockTextArea.append(String.format("%-15s%-20s%-10.2f%-10d\n",
+                stockTextArea.append(String.format("%-15s%-20s%-10.2f%-10d%-10s\n",
                         product.getProductId(),
                         product.getProductName(),
                         product.getProductPrice(),
-                        product.getProductQuantity()));
+                        product.getProductQuantity(),
+                        product.getUnit()));
             }
         }
     }
