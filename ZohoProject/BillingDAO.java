@@ -199,6 +199,7 @@ public class BillingDAO {
         }
         return null;
     }
+
     public int getProductQuantityById(String productId) {
         String sql = "SELECT product_quantity FROM Product WHERE product_id = ?";
         try (Connection connection = getConnection();
@@ -214,7 +215,6 @@ public class BillingDAO {
         }
         return 0; // Return 0 if product not found or in case of any error
     }
-
 
     public Product getProductById(String productId) {
         Product product = null;
@@ -237,7 +237,6 @@ public class BillingDAO {
         }
         return product;
     }
-
 
     public Map<Customer, Integer> getTotalPurchaseByCustomer() {
         Map<Customer, Integer> customerPurchases = new LinkedHashMap<>();
@@ -347,8 +346,6 @@ public class BillingDAO {
         BillingDAO billingDAO = new BillingDAO();
         Map<String, List<Bill>> salesByDate = billingDAO.getSalesDetailsByDate();
 
-
-
         System.out.println(salesByDate);
 
         System.out.println("Sales Details for Date: " + dateToDisplay);
@@ -419,24 +416,20 @@ public class BillingDAO {
         System.out.println("\nTotal Quantity Sold: " + totalQuantity);
     }
 
+
     public List<Product> getAllProducts() {
         List<Product> products = new ArrayList<>();
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-
-        try {
-            conn = getConnection();
-            String query = "SELECT * FROM product";
-            stmt = conn.prepareStatement(query);
-            rs = stmt.executeQuery();
-
+        String query = "SELECT * FROM Product";
+        try (Connection connection=getConnection();
+            PreparedStatement ps = connection.prepareStatement(query)){
+            ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 Product product = new Product();
                 product.setProductId(rs.getString("product_id"));
                 product.setProductName(rs.getString("product_name"));
                 product.setPrice(rs.getDouble("product_price"));
                 product.setProductQuantity(rs.getInt("product_quantity"));
+                product.setUnit(rs.getString("unit"));
                 products.add(product);
             }
         } catch (SQLException e) {
@@ -518,7 +511,6 @@ public class BillingDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return billDetails;
     }
 }
